@@ -1,1 +1,66 @@
+@startuml
+skinparam style strictuml
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+title AOP - Diseño para Regresión Lineal
+
+package "Aspects" {
+
+    class LoggingAspect <<aspect>> {
+        +pointcut endEpoch()
+        +after endEpoch(): log(metrics)
+    }
+
+    class TimingAspect <<aspect>> {
+        +pointcut startEpoch()
+        +around startEpoch(): measure_time()
+    }
+
+    class ValidationAspect <<aspect>> {
+        +pointcut validateModel()
+        +after validateModel(): compute_validation_mse()
+    }
+}
+
+package "Core" {
+
+    class Trainer {
+        -epochs: int
+        -learning_rate: float
+        -batch_size: int
+        +train()
+        +startEpoch()
+        +endEpoch()
+        +validateModel()
+    }
+
+    class LinearModel {
+        -w: float
+        -b: float
+        +predict(x): float
+    }
+
+    class Dataset {
+        -X: array
+        -y: array
+        +next_batch(n): (Xb, yb)
+    }
+
+    class Optimizer {
+        +compute_gradients(model, Xb, yb): (dw, db)
+        +update(model, dw, db)
+    }
+}
+
+' Relationships
+Trainer --> Dataset : usa
+Trainer --> LinearModel : entrena
+Trainer --> Optimizer : coordina
+
+' Aspect weaving (dashed arrows)
+LoggingAspect ..> Trainer : pointcut endEpoch
+TimingAspect ..> Trainer : pointcut startEpoch
+ValidationAspect ..> Trainer : pointcut validateModel
+
+@enduml
 
