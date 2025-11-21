@@ -51,12 +51,10 @@ Este programa implementa de manera explícita todos los pasos del cálculo: pred
 ### **Resultado Esperado de Benchmarks (aproximado)**
 > *Estos valores pueden cambiar dependiendo del hardware y optimizaciones específicas.*
 
-| Lenguaje | Implementación | Tiempo Aproximado | Comentario |
-|----------|----------------|------------------|-------------|
-| Python (NumPy) | Vectorizada | **1–3 ms** | Muy rápida gracias a librerías C/Fortran |
-| Python (sin NumPy) | Puro Python | **60–120 ms** | Mucho más lenta por sobrecarga del intérprete |
-| Rust (sin crates) | Bucle manual | **2–8 ms** | Similar o más rápido que NumPy en dataset pequeño |
-| Rust (con `ndarray`) | Vectorizada | **1–3 ms** | Equiparable o superior a NumPy |
+| Lenguaje | Implementación | Tiempo Aproximado |
+|----------|----------------|------------------|
+| Python (NumPy) | Vectorizada | **1–3 ms** |
+| Rust (con `ndarray`) | Vectorizada | **1–3 ms** |
 
 ### **Conclusión de Desempeño**
 - Para ejecuciones matemáticas de bajo nivel Rust suele ser **notablemente más rápido** que Python.
@@ -66,10 +64,3 @@ Este programa implementa de manera explícita todos los pasos del cálculo: pred
   - Bajo consumo de memoria.
   - Seguridad en el manejo de datos.
   - Sistemas de producción donde la consistencia y velocidad son críticas.
-
----
-
-## (Espacio reservado para los Puntos 1 y 2)
-
-> *Aquí va la introducción teórica general (punto 1) y la explicación de regresión lineal (punto 2). No se incluyen en este documento debido a que el usuario indicó que este corresponde al punto 3.*
-
