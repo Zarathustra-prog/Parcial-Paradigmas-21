@@ -1,3 +1,100 @@
+# 2. Diseño detallado de la solución utilizando el paradigma de Aspectos (AOP)
+
+En este apartado se presenta el **diseño arquitectónico** para una solución de **regresión lineal** basada en el **paradigma de programación orientada a aspectos (AOP)**. El objetivo es identificar de manera explícita los **puntos de corte (pointcuts)**, los **aspectos transversales** y las **responsabilidades centrales (Core)** que intervienen en el proceso de entrenamiento de un modelo de regresión lineal.
+
+Este diseño NO incluye implementación; se enfoca en la estructura, responsabilidades y comportamiento del sistema.
+
+---
+
+## 2.1 Objetivo del diseño
+El objetivo de la arquitectura AOP es **separar las preocupaciones principales** (entrenar un modelo de regresión lineal) de las **preocupaciones transversales** (logging, medición de tiempo, validación, sincronización, etc.).
+
+Esto permite:
+- Un diseño más modular y extensible.
+- Aislar los elementos transversales.
+- Permitir instrumentación sin modificar el código central.
+- Facilitar futuras optimizaciones o extensiones del sistema.
+
+---
+
+## 2.2 Componentes del sistema
+El sistema se divide en dos grandes grupos: **Core** y **Aspects**.
+
+### **A. Módulos Core**
+Estos representan la lógica esencial de la regresión lineal.
+
+### **1. LinearModel**
+Encargado de mantener los parámetros del modelo y realizar predicciones.
+- **Atributos:**
+  - `w: float` (pendiente)
+  - `b: float` (intercepto)
+- **Funciones:**
+  - `predict(x)` → calcula `w * x + b`
+
+### **2. Dataset**
+Provee los datos necesarios para el entrenamiento.
+- **Atributos:** `X`, `y`
+- **Funciones:**
+  - `next_batch(n)` → devuelve subconjuntos de entrenamiento
+
+### **3. Optimizer**
+Se encarga del cálculo de gradientes y actualización de parámetros.
+- **Funciones:**
+  - `compute_gradients(model, Xb, yb)`
+  - `update(model, dw, db)`
+
+### **4. Trainer**
+Controla el ciclo completo de entrenamiento.
+- **Atributos:** `epochs`, `learning_rate`, `batch_size`
+- **Funciones:**
+  - `train()` (bucle principal)
+  - `startEpoch()` (join point)
+  - `endEpoch()` (join point)
+  - `validateModel()` (join point)
+
+---
+
+### **B. Aspectos transversales (AOP)**
+Estos módulos interceptan la ejecución en los **join points** definidos por el `Trainer`.
+
+#### **1. LoggingAspect**
+Responsable de registrar métricas durante el entrenamiento.
+- `pointcut endEpoch()`
+- `after endEpoch()`: imprime MSE, w, b, gradientes
+
+#### **2. TimingAspect**
+Mide el tiempo que toma cada época.
+- `pointcut startEpoch()`
+- `around startEpoch()`: inicia y detiene temporizador
+
+#### **3. ValidationAspect**
+Realiza validación periódica.
+- `pointcut validateModel()`
+- `after validateModel()`: calcula MSE en datos de validación
+
+Estos aspectos funcionan sin modificar el código del `Trainer` gracias a la técnica de *weaving*.
+
+---
+
+## 2.3 Flujo general de ejecución
+1. `Trainer.train()` inicia el proceso.
+2. Se activa `startEpoch()` → interceptado por **TimingAspect**.
+3. Se obtiene un batch desde `Dataset`.
+4. `Optimizer` calcula gradientes.
+5. `Optimizer.update()` modifica los parámetros.
+6. Se activa `endEpoch()` → interceptado por **LoggingAspect**.
+7. Cada N épocas se activa `validateModel()` → interceptado por **ValidationAspect**.
+8. Repite hasta alcanzar `epochs`.
+
+---
+
+## 2.4 Correspondencia con el diagrama UML
+El diseño descrito corresponde directamente al diagrama PlantUML que se generará en la siguiente sección, integrando:
+- Paquete **Core** con sus relaciones.
+- Paquete **Aspects** con todos los pointcuts.
+- Conexiones mediante líneas discontinuas que indican el *weaving*.
+
+---
 # 3. Implementación en Rust de Regresión Lineal y Comparación de Desempeño con Python
 
 ## 3.1 Implementación de Regresión Lineal en Rust
