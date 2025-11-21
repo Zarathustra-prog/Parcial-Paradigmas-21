@@ -1,9 +1,5 @@
 # 3. Implementación en Rust de Regresión Lineal y Comparación de Desempeño con Python
 
-A continuación se presenta la implementación de un modelo de **regresión lineal simple** utilizando **Rust**, junto con una comparación de desempeño frente a la versión equivalente en **Python**. Esta sección corresponde al **punto 3**, por lo que se deja espacio para integrar los puntos 1 y 2 antes de este contenido.
-
----
-
 ## 3.1 Implementación de Regresión Lineal en Rust
 
 La siguiente implementación realiza el entrenamiento de un modelo de regresión lineal mediante **descenso de gradiente**. Esta versión no utiliza librerías externas, siguiendo una aproximación de bajo nivel para resaltar las capacidades del lenguaje Rust en operaciones numéricas:
